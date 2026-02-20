@@ -2,10 +2,13 @@
 
 import chalk from 'chalk';
 import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
 import clipboard from 'clipboardy'; // Добавили библиотеку для буфера
 import { generatePassword } from './logic.js';
 
-const DB_PATH = './vault.json';
+const DB_PATH = path.join(os.homedir(), '.pasaword_vault.json');
 
 const readDB = () => JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
 const writeDB = (data: any) => fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
