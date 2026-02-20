@@ -10,7 +10,15 @@ import { generatePassword } from './logic.js';
 
 const DB_PATH = path.join(os.homedir(), '.pasaword_vault.json');
 
-const readDB = () => JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+// И ПРОВЕРЬ: создается ли файл, если его нет
+const readDB = () => {
+    if (!fs.existsSync(DB_PATH)) {
+        fs.writeFileSync(DB_PATH, JSON.stringify([], null, 2));
+        return [];
+    }
+    return JSON.parse(fs.readFileSync(DB_PATH, 'utf-8'));
+};
+
 const writeDB = (data: any) => fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
 const clr1 = chalk.rgb(201, 204, 161);
 const clr2 = chalk.rgb(202,160,90);
