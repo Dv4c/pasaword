@@ -53,16 +53,20 @@ async function main() {
     showLogo();
 
     if (!command || command === '-h' || command === '--help') {
-        console.log('\n '+clr1('Options')+':');
-        console.log(`  ${clr2('-l, --list').padEnd(25)} ${clr7('Show list with all saved info')}`);
+        console.log('\n ' + clr1('Options') + ':');
+
+        // Выравниваем все основные команды по одной линии (25 символов)
+        console.log(`  ${clr2('-l, --list').padEnd(40)} ${clr7('Show list with all saved info')}`);
         
-        console.log(`  ${clr2('-g, --generate').padEnd(25)} ${clr7('Generate password : ') + clr3('<service> <login>') + clr3(' [type] [len]')}`);
-        console.log('      '+clr1('Default')+ ': ' + clr7('type') + clr7(' : ') + clr3('A-z9#') + ', ' + clr7('length') +clr7(' : ') + clr3('8'));
-        console.log('      '+clr1('Types') +':   '+ clr3('A-Z, A-z, a-z, A-9, a-9, 1-9, A-z9, A-z9#'));
+        console.log(`  ${clr2('-g, --generate').padEnd(40)} ${clr7('Generate password:')}${clr3('<service> <login>')}${clr7(' [type] [len]')}`);
+        // Используем пустую строку в padEnd для создания ровного отступа во второй строке
+       
+        console.log(`  ${''.padEnd(1)}${clr1('Default')}${''.padEnd(10)}${clr1('type:')} ${clr3('A-z9#')},${clr1('length: ')}${clr3('8')}`);
+        console.log(`  ${''.padEnd(1)}${clr1('Types')}:${''.padEnd(11)}${clr3('A-Z, A-z, a-z, A-9, a-9, 1-9, A-z9, A-z9#')}`);
         
-        console.log(`  ${clr2('-s, --save').padEnd(25)} ${clr7('Save manual password: ') + clr3('<service> <login> <pass>')}`);
-        console.log(`  ${clr2('-cp, --copy').padEnd(25)} ${clr7('Copy password to clipboard: ') + clr3('<id>')}`);
-        console.log(`  ${clr2('-d, --delete').padEnd(25)} ${clr7('Delete record by number: ') + clr3('<id>')}`);
+        console.log(`  ${clr2('-s, --save').padEnd(40)} ${clr7('Save manual password: ') + clr3('<service> <login> <pass>')}`);
+        console.log(`  ${clr2('-cp, --copy').padEnd(40)} ${clr7('Copy password to clipboard: ') + clr3('<id>')}`);
+        console.log(`  ${clr2('-d, --delete').padEnd(40)} ${clr7('Delete record by number: ') + clr3('<id>')}`);
         
         console.log();
         process.exit(0);
