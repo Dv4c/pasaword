@@ -1,25 +1,55 @@
-// src/logic.ts
+import { randomInt } from 'crypto';
 
 /**
- * Генерирует случайный пароль заданной длины
+ * Генерирует криптографически стойкий случайный пароль
  */
-export function generatePassword(length: number = 8, charsetType: string = 'A-z9#'): string {
-    const charsets: Record<string, string> = {
-        'A-Z': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-        'a-z': 'abcdefghijklmnopqrstuvwxyz',
-        'A-z': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-        'A-9': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-        'a-9': 'abcdefghijklmnopqrstuvwxyz0123456789',
-        '1-9': '0123456789',
-        'A-z9': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-        'A-z9#': 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
+export function generatePassword(length: number = 12, charsetType: string = 'A-z9#'): string {
+    const sets: Record<string, string> = {
+        upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        lower: 'abcdefghijklmnopqrstuvwxyz',
+        digits: '0123456789',
+        symbols: '!@#$%^&*()_+~`|}{[]:;?><,./-='
     };
 
-    // Если ввели неизвестный код, используем полный набор по умолчанию
-    const characters = charsets[charsetType] || charsets['A-z9#'];
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    // Определяем, какие наборы использовать исходя из типа
+    let characters = '';
+    let mustInclude: string[] = [];
+
+    if (charsetType.includes('A')) {
+        characters += sets.upper;
+        mustInclude.push(sets.upper);
     }
-    return result;
+    if (charsetType.includes('a')) {
+        characters += sets.lower;
+        mustInclude.push(sets.lower);
+    }
+    if (charsetType.includes('9')) {
+        characters += sets.digits;
+        mustInclude.push(sets.digits);
+    }
+    if (charsetType.includes('#')) {
+        characters += sets.symbols;
+        mustInclude.push(sets.symbols);
+    }
+
+    // Если тип не распознан, берем всё (A-z9#)
+    if (characters === '') {
+        characters = sets.upper + sets.lower + sets.digits + sets.symbols;
+        mustInclude = [sets.upper, sets.lower, sets.digits, sets.symbols];
+    }
+
+    let password = '';
+
+    // 1. Гарантируем наличие хотя бы одного символа из каждой выбранной группы
+    mustInclude.forEach(set => {
+        password += set[randomInt(0, set.length)];
+    });
+
+    // 2. Дозаполняем оставшуюся длину
+    for (let i = password.length; i < length; i++) {
+        password += characters[randomInt(0, characters.length)];
+    }
+
+    // 3. Перемешиваем пароль, чтобы гарантированные символы не всегда были в начале
+    return password.split('').sort(() => 0.5 - Math.random()).join('');
 }

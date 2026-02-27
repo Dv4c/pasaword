@@ -39,7 +39,7 @@ ${clr1('        /  ___  \\')}           ${clr3('____________/  _  \\        ')}
 ${clr2('       /  /   \\  \\')}         ${clr4(' \\PASAWORD\\__  |_|  |')}
 ${clr3('      _| |_____| |_')}                   ${clr5('  \\_____/')}
 ${clr4('     [     __      ]')}         
-${clr5('     |    /  \\     |')}        ${clr2('v1.1.2')}               
+${clr5('     |    /  \\     |')}        ${clr2('v1.1.3')}               
 ${clr6('     |    ||||     |')}         ${clr3('Author: Dv4c')}
 ${clr7('     |     ||      |')}         
 ${clr8('     |_____________|')}                     
@@ -61,7 +61,7 @@ async function main() {
         console.log(`  ${clr2('-g, --generate').padEnd(40)} ${clr7('Generate password:')}${clr3('<service> <login>')}${clr7(' [type] [len]')}`);
         // Используем пустую строку в padEnd для создания ровного отступа во второй строке
        
-        console.log(`  ${''.padEnd(1)}${clr1('Default')}${''.padEnd(10)}${clr1('type:')} ${clr3('A-z9#')},${clr1('length: ')}${clr3('8')}`);
+        console.log(`  ${''.padEnd(1)}${clr1('Default')}${''.padEnd(10)}${clr1('type:')} ${clr3('A-z9#')},${clr1('length: ')}${clr3('12')}`);
         console.log(`  ${''.padEnd(1)}${clr1('Types')}:${''.padEnd(11)}${clr3('A-Z, A-z, a-z, A-9, a-9, 1-9, A-z9, A-z9#')}`);
         
         console.log(`  ${clr2('-s, --save').padEnd(40)} ${clr7('Save manual password: ') + clr3('<service> <login> <pass>')}`);
@@ -107,7 +107,7 @@ async function main() {
             const svcGen = args[1];
             const logGen = args[2];
             const typeGen = args[3] || 'A-z9#'; 
-            const lenGen = parseInt(args[4]) || 8;
+            const lenGen = parseInt(args[4]) || 12; // 12 символов — современный минимум
 
             if (!svcGen || !logGen) {
                 console.log(chalk.red('\n [!] Error: Service and login are required!'));
