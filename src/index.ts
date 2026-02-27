@@ -35,7 +35,7 @@ ${clr2('       /  ____  \\')}
 ${clr3('      _| |____| |_')}                   
 ${clr4('     [     _      ]')}   ${clr2('             Dv4c_')}
 ${clr5('     |    /|\\     |')}  ${clr3(' __PASAWORD__/  _  \\        ')}
-${clr6('     |    |||     |')}   ${clr4('\\_v1.3.1_/__  |_|  |')}
+${clr6('     |    |||     |')}   ${clr4('\\_v1.4.1_/__  |_|  |')}
 ${clr7('     |    \\|/     |')}   ${clr5('            \\_____/')}
 ${clr8('     |____________|')}                     
     `);
@@ -56,6 +56,9 @@ async function main() {
         console.log(`  ${clr2('-f, --find').padEnd(20)} ${clr7('Search by service/login:')} ${clr3('<query>')}`);
         console.log(`  ${clr2('-s, --save').padEnd(20)} ${clr7('Manual save:')} ${clr3('<service> <login> <pass>')}`);
         console.log(`  ${clr2('-d, --delete').padEnd(20)} ${clr7('Delete ID, range (1-5) or all (-1)')}`);
+        console.log(`  ${clr2('-u, --update').padEnd(20)} ${clr7('Update entry:')}`);
+        console.log(`  ${''.padEnd(10)} ${clr3('-u -g <id> [type] [len]')} ${clr8('— Auto-generate')}`);
+        console.log(`  ${''.padEnd(10)} ${clr3('-u -m <id> <pass>')}       ${clr8('— Manual input')}`);
 
         console.log('\n ' + clr1('Password Types (Default: A-z9#)') + ':');
         console.log(`  ${clr2('A-Z').padEnd(10)} ${clr7('Uppercase letters')}`);
@@ -64,7 +67,7 @@ async function main() {
         console.log(`  ${clr2('9').padEnd(10)} ${clr7('Digits (0-9)')}`);
         console.log(`  ${clr2('#').padEnd(10)} ${clr7('Symbols (!@#$%...)')}`);
         
-        console.log(`\n  ${clr1('Note:')} ${clr8('Combine types in any order; dashes are optional (e.g., "Az9#", "a9", "A#9z")')}`);
+        console.log(`\n ${clr1('Note:')} ${clr8('Combine types in any order; dashes are optional (e.g., "Az9#", "a9", "A#9z")')}`);
         
         console.log();
         process.exit(0);
@@ -184,6 +187,56 @@ async function main() {
                 writeDB(newList);
                 console.log(chalk.red(` [×] Successfully deleted ${initialLength - newList.length} record(s).`));
             }
+            process.exit(0);
+            break;
+
+        case '-u':
+        case '--update':
+            const subCommand = args[1]; // -m или -g
+            const updateId = parseInt(args[2]);
+            let updateList = readDB();
+
+            // 1. Если нет подкоманды или она неверная — на выход в хелп
+            if (!subCommand || !['-m', '-g'].includes(subCommand)) {
+                console.log(chalk.red('\n [!] Error: Specify update mode: -m (manual) or -g (generate).'));
+                // Можно здесь не выходить, а просто вызвать логику хелпа, 
+                // но проще прервать процесс, чтобы юзер чекнул --help сам
+                process.exit(1);
+            }
+
+            // 2. Проверка ID
+            if (isNaN(updateId) || !updateList[updateId - 1]) {
+                console.log(chalk.red('\n [!] Error: Provide a valid record ID as the second argument.'));
+                process.exit(1);
+            }
+
+            const currentItem = updateList[updateId - 1];
+            let updatedPass: string;
+
+            // 3. Логика по флагам
+            if (subCommand === '-m') {
+                // Режим MANUAL: pasaword -u -m <id> <new_pass>
+                updatedPass = args[3]; 
+                if (!updatedPass) {
+                    console.log(chalk.red('\n [!] Error: Provide the new password for manual update.'));
+                    process.exit(1);
+                }
+                console.log(clr2(`\n [!] Manual update for: ${currentItem.service}`));
+            } else {
+                // Режим GENERATE: pasaword -u -g <id> [type] [len]
+                const typeUpdate = args[3] || 'A-z9#';
+                const lenUpdate = parseInt(args[4]) || 12;
+
+                updatedPass = generatePassword(lenUpdate, typeUpdate);
+                console.log(clr1(`\n [+] Generated update for: ${currentItem.service} (${typeUpdate}, len: ${lenUpdate})`));
+            }
+
+            // Сохранение
+            updateList[updateId - 1].password = updatedPass;
+            writeDB(updateList);
+
+            console.log(chalk.white.bgHex('#444').bold(`  ${updatedPass}  `));
+            console.log(clr2(` [✔] Updated successfully!`));
             process.exit(0);
             break;
 
